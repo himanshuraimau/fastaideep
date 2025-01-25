@@ -1,0 +1,4 @@
+fastai
+torch
+duckduckgo_search>=6.2
+ipykernel
