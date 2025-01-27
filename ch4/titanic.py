@@ -2,6 +2,7 @@ import torch
 import pandas as pd
 import random
 import math
+import matplotlib.pyplot as plt
 
 import math
 
@@ -91,6 +92,10 @@ optimizer = optim.SGD(model.parameters(), lr=0.01)
 
 # Train the model
 num_epochs = 1000
+losses = []
+epoch_plots = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900]  # Epochs to plot
+predictions_dict = {}  # Dictionary to store predictions for specified epochs
+
 for epoch in range(num_epochs):
     model.train()
     optimizer.zero_grad()
@@ -101,6 +106,30 @@ for epoch in range(num_epochs):
 
     if (epoch+1) % 100 == 0:
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
+    
+    # Store loss for plotting
+    if epoch == 0 or (epoch+1) % 100 == 0:
+        losses.append((epoch, loss.item()))
+
+    # Save predictions for specified epochs
+    if epoch in epoch_plots:
+        model.eval()
+        with torch.no_grad():
+            predictions = model(X_test_tensor)
+        predictions_dict[epoch] = predictions.numpy()
+
+# Plot the combined graph for the specified epochs
+plt.figure(figsize=(10, 5))
+random_indices = random.sample(range(len(predictions)), 10)
+for epoch, preds in predictions_dict.items():
+    plt.plot(random_indices, preds[random_indices], label=f'Epoch {epoch+1}')
+plt.plot(random_indices, y_test_tensor[random_indices], 'ro', label='Actual')
+plt.xlabel('Sample Index')
+plt.ylabel('Survived')
+plt.legend()
+plt.title('Actual vs Predicted Survival at Different Epochs')
+plt.savefig('/home/himanshu/code/fastaideep/ch4/actual_vs_predicted_epochs_combined.png')
+plt.show()
 
 # Evaluate the model
 model.eval()
@@ -114,4 +143,15 @@ df.loc[train_size:, 'Predictions'] = predictions.numpy()
 
 # Save the DataFrame with predictions to a new CSV file
 df.to_csv('/home/himanshu/code/fastaideep/ch4/train_with_predictions.csv', index=False)
+
+# Plot the loss over epochs
+epochs, loss_values = zip(*losses)
+plt.figure(figsize=(10, 5))
+plt.plot(epochs, loss_values, 'b-', label='Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.title('Loss over Epochs')
+plt.savefig('/home/himanshu/code/fastaideep/ch4/loss_over_epochs.png')
+plt.show()
 
