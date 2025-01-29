@@ -5,3 +5,4 @@ ipykernel
 fastbook
 gradio
 pandas
+matplotlib
