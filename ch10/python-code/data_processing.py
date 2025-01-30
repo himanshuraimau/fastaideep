@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 from datasets import Dataset
 
-path = Path('../ch10/us-patent-phrase-to-phrase-matching')
+path = Path('./ch10/python-code/us-patent-phrase-to-phrase-matching')
 
 def load_data(file_name):
     return pd.read_csv(path/file_name)
